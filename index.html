@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dr. Tripurari Kumar | Kalyan Clinic & Physiotherapy Centre</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary-dark: #0b1121;
+        --accent-blue: #3b82f6;
+        --accent-cyan: #06b6d4;
+      }
+
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background-color: var(--primary-dark);
+        color: #e2e8f0;
+        overflow-x: hidden;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5 {
+        font-family: "Outfit", sans-serif;
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 10px;
+        background: var(--primary-dark);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1e293b;
+        border-radius: 5px;
+        border: 2px solid var(--primary-dark);
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--accent-blue);
+      }
+
+      /* Loader */
+      #loader {
+        position: fixed;
+        inset: 0;
+        background: var(--primary-dark);
+        z-index: 100;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.5s ease;
+      }
+
+      /* Advanced Glassmorphism */
+      .glass-panel {
+        background: rgba(30, 41, 59, 0.4);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      }
+
+      .glass-tag {
+        background: rgba(6, 182, 212, 0.1);
+        border: 1px solid rgba(6, 182, 212, 0.2);
+        color: #22d3ee;
+      }
+
+      .gradient-text {
+        background: linear-gradient(
+          135deg,
+          var(--accent-cyan) 0%,
+          var(--accent-blue) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      #webgl-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      /* Nav & Testimonials */
+      .nav-link.active {
+        color: var(--accent-cyan);
+        font-weight: 600;
+      }
+      .testimonial-wrapper {
+        overflow: hidden;
+        padding: 20px 0;
+        cursor: grab;
+      }
+      .testimonial-wrapper:active {
+        cursor: grabbing;
+      }
+      .testimonial-track {
+        display: flex;
+        gap: 2rem;
+        padding-left: 1rem;
+      }
+      .testimonial-card {
+        flex: 0 0 400px;
+        user-select: none;
+      }
+      @media (max-width: 768px) {
+        .testimonial-card {
+          flex: 0 0 300px;
+        }
+      }
+    </style>
+  </head>
+  <body class="antialiased selection:bg-cyan-500/30 selection:text-cyan-50">
+    <div id="loader">
+      <div class="flex flex-col items-center">
+        <i class="fas fa-brain fa-spin text-5xl text-cyan-500 mb-4"></i>
+        <p
+          class="text-sm text-gray-400 tracking-[0.3em] uppercase font-semibold"
+        >
+          Dr. Tripurari Kumar
+        </p>
+      </div>
+    </div>
+
+    <div id="webgl-container"></div>
+
+    <nav
+      class="fixed w-full z-50 top-0 transition-transform duration-300"
+      id="mainNav"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-4">
+        <div
+          class="glass-panel rounded-full px-6 py-3 flex justify-between items-center"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg shadow-cyan-500/20"
+            >
+              <i class="fas fa-user-md text-white"></i>
+            </div>
+            <span class="text-xl font-bold tracking-tight text-white"
+              >Kalyan Clinic</span
+            >
+          </div>
+
+          <div
+            class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300"
+          >
+            <a href="#home" class="nav-link">Home</a>
+            <a href="#about" class="nav-link">Doctor's Profile</a>
+            <a href="#services" class="nav-link">Services</a>
+            <a href="#reviews" class="nav-link">Reviews</a>
+          </div>
+
+          <a
+            href="#contact"
+            class="hidden md:flex bg-white/10 hover:bg-white/20 border border-white/10 text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-all backdrop-blur-md"
+          >
+            Book Visit
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <section
+      id="home"
+      class="min-h-screen flex items-center relative px-6 pt-32 lg:pt-0"
+    >
+      <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+        <div class="hero-content z-10">
+          <div
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-tag text-sm font-semibold tracking-wider mb-8 backdrop-blur-md"
+          >
+            <i class="fas fa-certificate"></i>
+            EX-CONSULTANT PARAS HEALTH
+          </div>
+
+          <h1 class="text-6xl lg:text-7xl font-bold leading-tight mb-6">
+            Dr. Tripurari <br />
+            <span class="gradient-text">Kumar</span>
+          </h1>
+
+          <h2 class="text-xl text-cyan-400 font-medium mb-6 tracking-wide">
+            MPT (Neurology & Psychosomatic Disorder)
+          </h2>
+
+          <p class="text-gray-400 text-lg mb-10 max-w-lg leading-relaxed">
+            Bringing elite expertise from Paras Health to Samastipur.
+            Specialized in PIVD, Neurological Rehabilitation, and Nursing Care.
+            Known affectionately as "Dr. Vicky" by his patients.
+          </p>
+
+          <div class="flex flex-wrap gap-4">
+            <a
+              href="tel:+917888578952"
+              class="group bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-8 py-4 rounded-full font-bold flex items-center gap-3 transition-transform hover:scale-105 shadow-lg shadow-cyan-500/25"
+            >
+              <i class="fas fa-phone-alt"></i>
+              <span>Call Dr. Kumar</span>
+            </a>
+            <a
+              href="#about"
+              class="px-8 py-4 rounded-full font-bold border border-gray-700 hover:border-cyan-500 hover:text-cyan-400 transition flex items-center gap-3 backdrop-blur-sm bg-white/5"
+            >
+              View Qualifications
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="py-24 px-6 relative z-10">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+          <div class="relative about-images-block">
+            <div
+              class="rounded-[3rem] overflow-hidden border-2 border-white/10 shadow-2xl z-20 relative aspect-[4/5] bg-gray-800"
+            >
+              <img
+                src="./image.png"
+                alt="Dr. Tripurari Kumar"
+                class="w-full h-full object-cover grayscale-0 transition duration-700"
+              />
+
+              <div
+                class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/90 to-transparent p-8"
+              >
+                <h3 class="text-2xl font-bold text-white">
+                  Dr. Tripurari Kumar
+                </h3>
+                <p class="text-cyan-400 font-medium">
+                  Consultant Physiotherapist
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-8 about-text-block">
+            <div>
+              <h4
+                class="text-cyan-500 tracking-widest uppercase font-bold mb-3"
+              >
+                Professional Profile
+              </h4>
+              <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                Expertise You Can <span class="gradient-text">Trust</span>
+              </h2>
+              <p class="text-gray-300 text-lg leading-relaxed">
+                Dr. Tripurari Kumar (Vicky) is a highly qualified
+                physiotherapist with a Master's degree specializing in
+                <b>Neurology & Psychosomatic Disorders</b>. With extensive
+                experience at one of Bihar's top hospitals, he combines academic
+                excellence with practical clinical skill.
+              </p>
+            </div>
+
+            <div class="space-y-6 mt-8">
+              <div
+                class="flex gap-4 p-4 glass-panel rounded-2xl border-l-4 border-cyan-500"
+              >
+                <div class="mt-1">
+                  <i class="fas fa-hospital-alt text-xl text-cyan-400"></i>
+                </div>
+                <div>
+                  <h5 class="text-white font-bold text-lg">
+                    Former Consultant Physiotherapist
+                  </h5>
+                  <p class="text-gray-400 text-sm mb-1">
+                    Paras Health, Patna, Bihar
+                  </p>
+                  <span
+                    class="text-xs text-gray-500 bg-black/30 px-2 py-1 rounded"
+                    >20 Aug 2018 - 2020</span
+                  >
+                </div>
+              </div>
+
+              <div
+                class="flex gap-4 p-4 glass-panel rounded-2xl border-l-4 border-blue-500"
+              >
+                <div class="mt-1">
+                  <i class="fas fa-user-graduate text-xl text-blue-400"></i>
+                </div>
+                <div>
+                  <h5 class="text-white font-bold text-lg">
+                    Master of Physiotherapy (MPT)
+                  </h5>
+                  <p class="text-gray-400 text-sm mb-1">
+                    Neurology & Psychosomatic Disorder
+                  </p>
+                  <p class="text-gray-500 text-xs">
+                    Mahatma Jyoti Rao Phoole University (2018-2021)
+                  </p>
+                </div>
+              </div>
+
+              <div
+                class="flex gap-4 p-4 glass-panel rounded-2xl border-l-4 border-purple-500"
+              >
+                <div class="mt-1">
+                  <i class="fas fa-university text-xl text-purple-400"></i>
+                </div>
+                <div>
+                  <h5 class="text-white font-bold text-lg">
+                    Bachelor of Physiotherapy (BPT)
+                  </h5>
+                  <p class="text-gray-400 text-sm">
+                    Adesh Institute of Medical Sciences
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-6 pt-4 border-t border-gray-800">
+              <span class="text-sm text-gray-500 uppercase tracking-wider"
+                >Languages:</span
+              >
+              <div class="flex gap-3">
+                <span
+                  class="px-3 py-1 bg-white/5 rounded-full text-sm text-gray-300"
+                  >English</span
+                >
+                <span
+                  class="px-3 py-1 bg-white/5 rounded-full text-sm text-gray-300"
+                  >Punjabi</span
+                >
+                <span
+                  class="px-3 py-1 bg-white/5 rounded-full text-sm text-gray-300"
+                  >Hindi</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="services"
+      class="py-24 px-6 bg-secondary-dark/50 relative z-10"
+    >
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-20">
+          <h2 class="text-4xl font-bold mb-4">Clinical Specializations</h2>
+          <p class="text-gray-400 max-w-xl mx-auto">
+            Advanced treatments based on Master's level Neurological expertise.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          <div
+            class="glass-panel p-10 rounded-[2.5rem] hover:border-cyan-500/50 transition-all duration-300 group service-card"
+          >
+            <div
+              class="w-16 h-16 bg-cyan-900/50 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-cyan-500 transition-colors"
+            >
+              <i
+                class="fas fa-bone text-3xl text-cyan-400 group-hover:text-white"
+              ></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 text-white">PIVD Specialist</h3>
+            <p class="text-gray-400 leading-relaxed mb-8">
+              Expert management of Prolapsed Intervertebral Disc. Using
+              non-surgical protocols refined during years of practice.
+            </p>
+          </div>
+
+          <div
+            class="glass-panel p-10 rounded-[2.5rem] hover:border-purple-500/50 transition-all duration-300 group service-card"
+          >
+            <div
+              class="w-16 h-16 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-purple-500 transition-colors"
+            >
+              <i
+                class="fas fa-brain text-3xl text-purple-400 group-hover:text-white"
+              ></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 text-white">
+              Neuro Rehabilitation
+            </h3>
+            <p class="text-gray-400 leading-relaxed mb-8">
+              Specialized MPT-level care for Stroke, Paralysis, and Nerve
+              disorders. Focusing on rewiring the brain-body connection.
+            </p>
+          </div>
+
+          <div
+            class="glass-panel p-10 rounded-[2.5rem] hover:border-blue-500/50 transition-all duration-300 group service-card"
+          >
+            <div
+              class="w-16 h-16 bg-blue-900/50 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-blue-500 transition-colors"
+            >
+              <i
+                class="fas fa-user-nurse text-3xl text-blue-400 group-hover:text-white"
+              ></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 text-white">Nursing Care</h3>
+            <p class="text-gray-400 leading-relaxed mb-8">
+              Comprehensive nursing services provided under Dr. Kumar's
+              supervision, ensuring hospital-grade care at the clinic.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reviews" class="py-24 overflow-hidden relative z-10">
+      <div class="max-w-7xl mx-auto px-6 mb-12">
+        <h4 class="text-cyan-500 tracking-widest uppercase font-bold mb-4">
+          Patient Feedback
+        </h4>
+        <h2 class="text-4xl font-bold">Trusted by Samastipur</h2>
+      </div>
+
+      <div class="testimonial-wrapper pl-6 md:pl-0">
+        <div class="testimonial-track">
+          <div class="testimonial-card glass-panel p-8 rounded-3xl">
+            <div class="flex text-yellow-500 mb-4 text-sm">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i
+              ><i class="fas fa-star"></i><i class="fas fa-star"></i
+              ><i class="fas fa-star"></i>
+            </div>
+            <p class="text-lg text-gray-300 italic mb-6">
+              "Dr. Vicky is amazing. His experience at Paras Hospital really
+              shows. He diagnosed my back pain instantly and the treatment
+              worked wonders."
+            </p>
+            <h5 class="font-bold text-white">Amit Singh</h5>
+          </div>
+          <div class="testimonial-card glass-panel p-8 rounded-3xl">
+            <div class="flex text-yellow-500 mb-4 text-sm">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i
+              ><i class="fas fa-star"></i><i class="fas fa-star"></i
+              ><i class="fas fa-star"></i>
+            </div>
+            <p class="text-lg text-gray-300 italic mb-6">
+              "Best physiotherapist in Kalyanpur. Very polite and speaks Punjabi
+              too which was helpful for my grandmother."
+            </p>
+            <h5 class="font-bold text-white">Gurpreet Kaur</h5>
+          </div>
+          <div class="testimonial-card glass-panel p-8 rounded-3xl">
+            <div class="flex text-yellow-500 mb-4 text-sm">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i
+              ><i class="fas fa-star"></i><i class="fas fa-star"></i
+              ><i class="fas fa-star"></i>
+            </div>
+            <p class="text-lg text-gray-300 italic mb-6">
+              "The clinic is very modern. Dr. Tripurari creates a very positive
+              environment for recovery."
+            </p>
+            <h5 class="font-bold text-white">Rahul Verma</h5>
+          </div>
+          <div class="testimonial-card glass-panel p-8 rounded-3xl">
+            <div class="flex text-yellow-500 mb-4 text-sm">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i
+              ><i class="fas fa-star"></i><i class="fas fa-star"></i
+              ><i class="fas fa-star"></i>
+            </div>
+            <p class="text-lg text-gray-300 italic mb-6">
+              "Treatment of PIVD without surgery. I am very thankful to Dr.
+              Kumar."
+            </p>
+            <h5 class="font-bold text-white">Suman Devi</h5>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer
+      id="contact"
+      class="bg-[#080d1a] pt-24 relative z-10 border-t border-white/5"
+    >
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid lg:grid-cols-2 gap-16 mb-16">
+          <div>
+            <h2 class="text-4xl font-bold mb-8 text-white">
+              Visit Kalyan Clinic
+            </h2>
+            <div class="space-y-6">
+              <div class="flex items-start gap-6">
+                <i class="fas fa-map-marker-alt text-cyan-400 text-xl mt-1"></i>
+                <div>
+                  <p class="text-gray-400">
+                    Near Sabji Mandi, Kalyanpur Basti,<br />Madudabad,
+                    Mohiuddinagar,<br />Samastipur-848502, Bihar
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-start gap-6">
+                <i class="fas fa-phone-volume text-cyan-400 text-xl mt-1"></i>
+                <div>
+                  <p class="text-gray-400">
+                    <a href="tel:+7888578952" class="hover:text-cyan-400"
+                      >+91 7888578952</a
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="h-[300px] rounded-3xl overflow-hidden glass-panel p-2">
+            <iframe
+              class="w-full h-full rounded-2xl grayscale invert-[.9]"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3596.123456789!2d85.123456!3d25.123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDA3JzM0LjQiTiA4NcKwNDUnMTIuMyJF!5e0!3m2!1sen!2sin!4v1600000000000!5m2!1sen!2sin"
+              style="border: 0"
+              allowfullscreen=""
+              loading="lazy"
+            ></iframe>
+          </div>
+        </div>
+        <div
+          class="py-8 border-t border-white/5 text-center text-gray-500 text-sm"
+        >
+          <p>
+            © 2024 Dr. Tripurari Kumar | Kalyan Clinic And Physiotherapy Centre
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // 1. Preloader
+      window.addEventListener("load", () => {
+        const loader = document.getElementById("loader");
+        gsap.to(loader, {
+          opacity: 0,
+          duration: 0.5,
+          onComplete: () => (loader.style.display = "none"),
+        });
+        initAnimations();
+      });
+
+      gsap.registerPlugin(ScrollTrigger, Draggable);
+
+      // 2. Animations
+      function initAnimations() {
+        gsap.from(".hero-content > *", {
+          opacity: 0,
+          y: 40,
+          duration: 1,
+          stagger: 0.15,
+          ease: "power3.out",
+          delay: 0.5,
+        });
+        gsap.from(".about-text-block > *", {
+          scrollTrigger: { trigger: "#about", start: "top 75%" },
+          opacity: 0,
+          x: 30,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: "power2.out",
+        });
+        gsap.from(".about-images-block", {
+          scrollTrigger: { trigger: "#about", start: "top 75%" },
+          opacity: 0,
+          scale: 0.9,
+          duration: 1,
+          ease: "back.out(1.5)",
+        });
+        gsap.from(".service-card", {
+          scrollTrigger: { trigger: "#services", start: "top 80%" },
+          y: 60,
+          opacity: 0,
+          duration: 0.6,
+          stagger: 0.15,
+          ease: "back.out(1.7)",
+        });
+      }
+
+      // 3. Draggable Carousel
+      const track = document.querySelector(".testimonial-track");
+      const scrollTween = gsap.to(track, {
+        x: -(track.offsetWidth - window.innerWidth + 100),
+        ease: "none",
+        duration: 30,
+        repeat: -1,
+        yoyo: true,
+      });
+      Draggable.create(track, {
+        type: "x",
+        bounds: ".testimonial-wrapper",
+        inertia: true,
+        onDragStart: () => scrollTween.pause(),
+      });
+
+      // 4. Three.js DNA Background
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x0b1121, 0.02);
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      const renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        antialias: true,
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      document
+        .getElementById("webgl-container")
+        .appendChild(renderer.domElement);
+
+      const particlesGeometry = new THREE.BufferGeometry();
+      const particlesCount = 1800;
+      const posArray = new Float32Array(particlesCount * 3);
+      const colors = new Float32Array(particlesCount * 3);
+
+      for (let i = 0; i < particlesCount; i++) {
+        const i3 = i * 3;
+        const y = (Math.random() - 0.5) * 60;
+        const radius = 6 + Math.random() * 3;
+        const angle = y * 0.4 + (i % 2 === 0 ? 0 : Math.PI);
+
+        posArray[i3] =
+          Math.cos(angle) * radius + (Math.random() - 0.5) * 2 + 10;
+        posArray[i3 + 1] = y;
+        posArray[i3 + 2] = Math.sin(angle) * radius + (Math.random() - 0.5) * 2;
+
+        const color = new THREE.Color();
+        color.setHSL(0.55 + Math.random() * 0.1, 0.8, 0.5);
+        colors[i3] = color.r;
+        colors[i3 + 1] = color.g;
+        colors[i3 + 2] = color.b;
+      }
+      particlesGeometry.setAttribute(
+        "position",
+        new THREE.BufferAttribute(posArray, 3)
+      );
+      particlesGeometry.setAttribute(
+        "color",
+        new THREE.BufferAttribute(colors, 3)
+      );
+
+      const material = new THREE.PointsMaterial({
+        size: 0.15,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending,
+      });
+      const dna = new THREE.Points(particlesGeometry, material);
+      scene.add(dna);
+      camera.position.z = 25;
+
+      let mouseX = 0,
+        mouseY = 0;
+      document.addEventListener("mousemove", (e) => {
+        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      });
+
+      const clock = new THREE.Clock();
+      function animate() {
+        const t = clock.getElapsedTime();
+        dna.rotation.y = t * 0.1;
+        dna.rotation.x += (mouseY * 0.2 - dna.rotation.x) * 0.05;
+        dna.rotation.z += (mouseX * 0.2 - dna.rotation.z) * 0.05;
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+      animate();
+
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    </script>
+  </body>
+</html>
