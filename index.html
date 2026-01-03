@@ -63,7 +63,7 @@
         position: fixed;
         inset: 0;
         background: var(--primary-dark);
-        z-index: 100;
+        z-index: 9999;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -105,26 +105,35 @@
         pointer-events: none;
       }
 
-      /* Nav & Testimonials */
+      /* Nav & Testimonials - FIXED LOGIC */
       .nav-link.active {
         color: var(--accent-cyan);
         font-weight: 600;
       }
+
+      /* Crucial fix for scrolling */
       .testimonial-wrapper {
         overflow: hidden;
         padding: 20px 0;
         cursor: grab;
+        width: 100%;
+        touch-action: pan-y;
       }
       .testimonial-wrapper:active {
         cursor: grabbing;
       }
+
+      /* Width max-content ensures it doesn't collapse */
       .testimonial-track {
         display: flex;
         gap: 2rem;
+        width: max-content;
         padding-left: 1rem;
+        padding-right: 1rem;
       }
+
       .testimonial-card {
-        flex: 0 0 400px;
+        flex: 0 0 350px;
         user-select: none;
       }
       @media (max-width: 768px) {
@@ -171,7 +180,7 @@
             class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300"
           >
             <a href="#home" class="nav-link">Home</a>
-            <a href="#about" class="nav-link">Doctor's Profile</a>
+            <a href="#about" class="nav-link">Profile</a>
             <a href="#services" class="nav-link">Services</a>
             <a href="#reviews" class="nav-link">Reviews</a>
           </div>
@@ -361,7 +370,7 @@
 
     <section
       id="services"
-      class="py-24 px-6 bg-secondary-dark/50 relative z-10"
+      class="py-24 px-6 bg-secondary-dark/50 relative z-10 min-h-[80vh]"
     >
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-20">
@@ -429,11 +438,16 @@
     </section>
 
     <section id="reviews" class="py-24 overflow-hidden relative z-10">
-      <div class="max-w-7xl mx-auto px-6 mb-12">
-        <h4 class="text-cyan-500 tracking-widest uppercase font-bold mb-4">
-          Patient Feedback
-        </h4>
-        <h2 class="text-4xl font-bold">Trusted by Samastipur</h2>
+      <div class="max-w-7xl mx-auto px-6 mb-12 flex justify-between items-end">
+        <div>
+          <h4 class="text-cyan-500 tracking-widest uppercase font-bold mb-4">
+            Patient Feedback
+          </h4>
+          <h2 class="text-4xl font-bold">Trusted by Samastipur</h2>
+        </div>
+        <div class="text-gray-500 text-sm hidden md:block">
+          <i class="fas fa-hand-pointer mr-2"></i> Drag to scroll
+        </div>
       </div>
 
       <div class="testimonial-wrapper pl-6 md:pl-0">
@@ -486,6 +500,18 @@
               Kumar."
             </p>
             <h5 class="font-bold text-white">Suman Devi</h5>
+          </div>
+          <div class="testimonial-card glass-panel p-8 rounded-3xl">
+            <div class="flex text-yellow-500 mb-4 text-sm">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i
+              ><i class="fas fa-star"></i><i class="fas fa-star"></i
+              ><i class="fas fa-star"></i>
+            </div>
+            <p class="text-lg text-gray-300 italic mb-6">
+              "Excellent nursing staff and care. Highly recommended for post-op
+              recovery."
+            </p>
+            <h5 class="font-bold text-white">Vikram Malhotra</h5>
           </div>
         </div>
       </div>
@@ -544,71 +570,98 @@
     </footer>
 
     <script>
-      // 1. Preloader
+      // 1. PRELOADER & INITIALIZATION
       window.addEventListener("load", () => {
         const loader = document.getElementById("loader");
+
+        // Wait for everything to load, then hide loader
         gsap.to(loader, {
           opacity: 0,
           duration: 0.5,
-          onComplete: () => (loader.style.display = "none"),
+          onComplete: () => {
+            loader.style.display = "none";
+            // Initialize animations ONLY after loader is gone to prevent miscalculations
+            initAnimations();
+            ScrollTrigger.refresh(); // Force recalculation of positions
+          },
         });
-        initAnimations();
       });
 
       gsap.registerPlugin(ScrollTrigger, Draggable);
 
-      // 2. Animations
+      // 2. ROBUST ANIMATIONS
       function initAnimations() {
+        // Hero
         gsap.from(".hero-content > *", {
           opacity: 0,
           y: 40,
           duration: 1,
           stagger: 0.15,
           ease: "power3.out",
-          delay: 0.5,
         });
-        gsap.from(".about-text-block > *", {
-          scrollTrigger: { trigger: "#about", start: "top 75%" },
-          opacity: 0,
-          x: 30,
-          duration: 0.8,
-          stagger: 0.1,
-          ease: "power2.out",
-        });
-        gsap.from(".about-images-block", {
-          scrollTrigger: { trigger: "#about", start: "top 75%" },
-          opacity: 0,
-          scale: 0.9,
-          duration: 1,
-          ease: "back.out(1.5)",
-        });
-        gsap.from(".service-card", {
-          scrollTrigger: { trigger: "#services", start: "top 80%" },
-          y: 60,
-          opacity: 0,
-          duration: 0.6,
-          stagger: 0.15,
-          ease: "back.out(1.7)",
-        });
+
+        // Profile - using 'fromTo' ensures it always has a visible end state
+        gsap.fromTo(
+          ".about-text-block > *",
+          { opacity: 0, x: 30 },
+          {
+            scrollTrigger: { trigger: "#about", start: "top 85%" },
+            opacity: 1,
+            x: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power2.out",
+          }
+        );
+
+        gsap.fromTo(
+          ".about-images-block",
+          { opacity: 0, scale: 0.9 },
+          {
+            scrollTrigger: { trigger: "#about", start: "top 85%" },
+            opacity: 1,
+            scale: 1,
+            duration: 1,
+            ease: "back.out(1.5)",
+          }
+        );
+
+        // Services - FIXED TRIGGER POINT
+        // Trigger earlier (top 95%) so it doesn't get stuck if user scrolls fast
+        gsap.fromTo(
+          ".service-card",
+          { y: 60, opacity: 0 },
+          {
+            scrollTrigger: { trigger: "#services", start: "top 95%" },
+            y: 0,
+            opacity: 1,
+            duration: 0.6,
+            stagger: 0.15,
+            ease: "back.out(1.7)",
+          }
+        );
       }
 
-      // 3. Draggable Carousel
+      // 3. FIXED DRAGGABLE REVIEWS
       const track = document.querySelector(".testimonial-track");
-      const scrollTween = gsap.to(track, {
-        x: -(track.offsetWidth - window.innerWidth + 100),
-        ease: "none",
-        duration: 30,
-        repeat: -1,
-        yoyo: true,
-      });
-      Draggable.create(track, {
+      const wrapper = document.querySelector(".testimonial-wrapper");
+
+      // Setup Draggable
+      const dragger = Draggable.create(track, {
         type: "x",
-        bounds: ".testimonial-wrapper",
+        bounds: wrapper, // Use the wrapper as bounds
         inertia: true,
-        onDragStart: () => scrollTween.pause(),
+        edgeResistance: 0.65,
+        dragClickables: true,
+      })[0];
+
+      // Update bounds on resize to ensure scrolling always works
+      window.addEventListener("resize", () => {
+        dragger.applyBounds(wrapper);
+        ScrollTrigger.refresh();
       });
 
-      // 4. Three.js DNA Background
+      // 4. THREE.JS BACKGROUND
       const scene = new THREE.Scene();
       scene.fog = new THREE.FogExp2(0x0b1121, 0.02);
       const camera = new THREE.PerspectiveCamera(
@@ -621,8 +674,17 @@
         alpha: true,
         antialias: true,
       });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Robust resize handling for 3D
+      function resizeRenderer() {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      }
+      resizeRenderer();
+      window.addEventListener("resize", resizeRenderer);
+
       document
         .getElementById("webgl-container")
         .appendChild(renderer.domElement);
@@ -686,12 +748,6 @@
         requestAnimationFrame(animate);
       }
       animate();
-
-      window.addEventListener("resize", () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
     </script>
   </body>
 </html>
